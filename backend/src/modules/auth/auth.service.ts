@@ -16,10 +16,12 @@ export class AuthService {
     async register(email: string, password: string, role: 'customer' | 'owner'){
         const existing = await this.prisma.user.findUnique({ where: { email } });
 
+        email = email.toLowerCase().trim();
+        
         if (existing) {
             throw new BadRequestException('Email already in use');
         }
-
+        
         const hash = await bcrypt.hash(password, 12);
 
         const user = await this.prisma.user.create({
