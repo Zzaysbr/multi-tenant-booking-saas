@@ -1,4 +1,11 @@
+import { IsString, MinLength } from 'class-validator'; 
+
+
 export class CreateTenantDto {
+    @IsString()
+    @MinLength(2)
     name: string;
+
+    @IsString()
     timezone: string;
 }

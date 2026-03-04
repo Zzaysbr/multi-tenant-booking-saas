@@ -16,7 +16,6 @@ export class AuthService {
     async register(email: string, password: string, role: 'customer' | 'owner'){
         const existing = await this.prisma.user.findUnique({ where: { email } });
 
-        email = email.toLowerCase().trim();
         
         if (existing) {
             throw new BadRequestException('Email already in use');
@@ -26,7 +25,7 @@ export class AuthService {
 
         const user = await this.prisma.user.create({
             data: {
-                email,
+                email: email.toLocaleLowerCase().trim(),
                 passwordHash: hash,
                 role,
             },
@@ -57,7 +56,7 @@ export class AuthService {
 
         // generate JWT
         const token = jwt.sign(
-            { sub: user.id, role: user.role },
+            { sub: user.id, role: user.role, email: user.email},
             process.env.JWT_SECRET!,
             { expiresIn: '15m' },
         );

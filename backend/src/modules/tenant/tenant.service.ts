@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
+import { contains } from 'class-validator';
 
 @Injectable()
 export class TenantService {
@@ -15,11 +16,14 @@ export class TenantService {
         });
     }
 
-    async findMine(ownerId: string) {
+    async findMine(userId: string, search?: string) {
         return this.prisma.tenant.findMany({
             where: {
-                ownerId,
+                ownerId: userId,
                 deletedAt: null,
+                name: search
+                    ? { contains: search, mode: 'insensitive' }
+                    : undefined,
             },
         });
     }
@@ -44,4 +48,5 @@ export class TenantService {
             },
         });
     }
+
 }
